@@ -352,23 +352,10 @@ screen main_menu():
     ## use 语句将其他的界面包含进此界面。标题界面的实际内容在导航界面中。
     use navigation
 
-    if gui.show_name:
-
-        vbox:
-            style "main_menu_vbox"
-
-            text "[config.name!t]":
-                style "main_menu_title"
-
-            text "[config.version]":
-                style "main_menu_version"
-
 
 style main_menu_frame is empty
 style main_menu_vbox is vbox
 style main_menu_text is gui_text
-style main_menu_title is main_menu_text
-style main_menu_version is main_menu_text
 
 style main_menu_frame:
     xsize 280
@@ -542,9 +529,7 @@ screen about():
             label "[config.name!t]"
             text _("版本 [config.version!t]\n")
 
-            ## gui.about 通常在 options.rpy 中设置。
-            if gui.about:
-                text "[gui.about!t]\n"
+            text _("短文字\n")
 
             text _("引擎：{a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only]\n\n[renpy.license!t]")
 
