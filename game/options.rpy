@@ -25,19 +25,6 @@ define build.name = "moredomoredo"
 
 ## 音效和音乐 #######################################################################
 
-## 这三个变量控制哪些内置的混音器会默认显示给用户。将其中一个设置为 False 将隐藏
-## 对应的混音器。
-
-define config.has_sound = True
-define config.has_music = True
-define config.has_voice = True
-
-## 为了让用户在音效或语音轨道上播放测试音频，请取消对下面一行的注释并设置播放的
-## 样本声音。
-
-# define config.sample_sound = "sample-sound.ogg"
-# define config.sample_voice = "sample-voice.ogg"
-
 ## 将以下语句取消注释就可以设置标题界面播放的背景音乐文件。此文件将在整个游戏中
 ## 持续播放，直至音乐停止或其他文件开始播放。
 
@@ -51,12 +38,12 @@ define config.has_voice = True
 
 ## 进入或退出游戏菜单。
 
-define config.enter_transition = dissolve
-define config.exit_transition = dissolve
+define config.enter_transition = Dissolve(0.25)
+define config.exit_transition = Dissolve(0.25)
 
 ## 各个游戏菜单之间的转场。
 
-define config.intra_transition = dissolve
+define config.intra_transition = Dissolve(0.25)
 
 ## 载入游戏后使用的转场。
 

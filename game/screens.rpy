@@ -695,56 +695,47 @@ screen preferences():
                             ## 可在此处添加 radio_pref 或 check_pref 类型的额外 vbox，以添加
                             ## 额外的创建者定义的偏好设置。
 
-                            hbox:
+                            vbox:
                                 style_prefix "slider"
                                 box_wrap True
 
+                                hbox:
+                                    label _("背景音乐")
+                                    bar value Preference("music volume")
+                                hbox:
+                                    label _("音效音量")
+                                    bar value Preference("sound volume")
+                                hbox:
+                                    label _("语音音量")
+                                    bar value Preference("voice volume")
+
+
+                            if renpy.variant("pc") or renpy.variant("web"):
                                 vbox:
+                                    box_wrap True
+                                    hbox:
+                                        box_wrap True
+                                        style_prefix "radio"
+                                        label _("显示")
+                                        textbutton _("窗口"):
+                                            action Preference("display", "window")
+                                        textbutton _("全屏"):
+                                            action Preference("display", "fullscreen")
+
+                            vbox:
+                                style_prefix "slider"
+                                box_wrap True
+                                hbox:
                                     label _("文字速度")
                                     bar value Preference("text speed")
-
-                                vbox:
+                                hbox:
                                     label _("自动前进时间")
                                     bar value Preference("auto-forward time")
 
-                                if config.has_music:
-                                    vbox:
-                                        label _("音乐音量")
-                                        bar value Preference("music volume")
-
-                                if config.has_sound:
-                                    vbox:
-                                        label _("音效音量")
-                                        bar value Preference("sound volume")
-                                        if config.sample_sound:
-                                            textbutton _("测试") action Play("sound", config.sample_sound)
-
-                                if config.has_voice:
-                                    vbox:
-                                        label _("语音音量")
-                                        bar value Preference("voice volume")
-                                        if config.sample_voice:
-                                            textbutton _("测试") action Play("voice", config.sample_voice)
-
-                                if config.has_music or config.has_sound or config.has_voice:
-                                    vbox:
-                                        null height gui.pref_spacing
-                                        textbutton _("全部静音"):
-                                            action Preference("all mute", "toggle")
-                                            style "mute_all_button"
-
-                            hbox:
+                            vbox:
                                 box_wrap True
-
-                                if renpy.variant("pc") or renpy.variant("web"):
-                                    vbox:
-                                        style_prefix "radio"
-                                        label _("显示")
-                                        textbutton _("窗口") action Preference("display", "window")
-                                        textbutton _("") action Preference("display", "fullscreen")
-
-                                vbox:
-                                    style_prefix "check"
+                                style_prefix "check"
+                                hbox:
                                     label _("快进")
                                     textbutton _("未读文本") action Preference("skip", "toggle")
                                     textbutton _("选项后继续") action Preference("after choices", "toggle")
@@ -767,37 +758,33 @@ style radio_label is pref_label
 style radio_label_text is pref_label_text
 style radio_button is gui_button
 style radio_button_text is gui_button_text
-style radio_vbox is pref_vbox
+style radio_hbox is pref_hbox
 
 style check_label is pref_label
 style check_label_text is pref_label_text
 style check_button is gui_button
 style check_button_text is gui_button_text
-style check_vbox is pref_vbox
+style check_hbox is pref_hbox
 
 style slider_label is pref_label
 style slider_label_text is pref_label_text
 style slider_slider is gui_slider
 style slider_button is gui_button
 style slider_button_text is gui_button_text
-style slider_pref_vbox is pref_vbox
+style slider_pref_hbox is pref_hbox
 
 style mute_all_button is check_button
 style mute_all_button_text is check_button_text
 
 style pref_label:
-    top_margin gui.pref_spacing
-    bottom_margin 2
+    top_padding 0
+    bottom_margin gui.pref_spacing
 
 style pref_label_text:
-    yalign 1.0
+    yalign 0.0
 
 style pref_vbox:
-    xsize 350
-    xalign 0.5
-
-style radio_vbox:
-    spacing gui.pref_button_spacing
+    top_padding gui.pref_spacing * 4
 
 style radio_button:
     properties gui.button_properties("radio_button")
@@ -805,9 +792,6 @@ style radio_button:
 
 style radio_button_text:
     properties gui.button_text_properties("radio_button")
-
-style check_vbox:
-    spacing gui.pref_button_spacing
 
 style check_button:
     properties gui.button_properties("check_button")
@@ -818,14 +802,9 @@ style check_button_text:
 
 style slider_slider:
     xsize 350
-    xoffset 300
-    yoffset -30
-    xalign 1.0
 
 style slider_button:
     properties gui.button_properties("slider_button")
-    yalign 0.5
-    left_margin 10
 
 style slider_button_text:
     properties gui.button_text_properties("slider_button")
@@ -839,7 +818,11 @@ style slider_vbox:
 style preferences_outer_frame:
     xalign 0.5
     yalign 1.0
-    top_margin 40
+    top_padding 50
+    xsize 800
+
+style preferences_content_frame:
+    xsize 800
 
 
 ## 历史界面 ########################################################################
