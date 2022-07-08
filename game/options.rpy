@@ -11,7 +11,7 @@
 ##
 ## 带有 _() 的字符串表示其可被翻译。
 
-define config.name = _("more多more多心跳校园【work in progress】")
+define config.name = _("more多more多心跳校园")
 
 ## 游戏版本号。
 
