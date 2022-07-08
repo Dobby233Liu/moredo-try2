@@ -1,0 +1,9 @@
+*.rpa
+*.rpymc
+*.rpy[bc]
+*.pyc
+log.txt
+traceback.txt
+errors.txt
+game/cache
+game/saves
