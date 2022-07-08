@@ -287,38 +287,25 @@ screen navigation():
         spacing gui.navigation_spacing
 
         if main_menu:
-
-            textbutton _("开始游戏") action Start()
-
+            textbutton _("新游戏") action Start()
         else:
-
-            textbutton _("历史") action ShowMenu("history")
-
-            textbutton _("保存") action ShowMenu("save")
-
-        textbutton _("读取游戏") action ShowMenu("load")
+            textbutton _("对话历史") action ShowMenu("history")
+            textbutton _("保存进度") action ShowMenu("save")
+        textbutton _("读取进度") action ShowMenu("load")
 
         textbutton _("设置") action ShowMenu("preferences")
 
         if _in_replay:
-
             textbutton _("结束回放") action EndReplay(confirm=True)
-
         elif not main_menu:
-
             textbutton _("标题界面") action MainMenu()
 
-        textbutton _("关于") action ShowMenu("about")
-
-        if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
-
-            ## “帮助”对移动设备来说并非必需或相关。
-            textbutton _("帮助") action ShowMenu("help")
-
+        ## 退出按钮在 iOS 上是被禁止使用的，在安卓和网页上也不是必要的。
         if renpy.variant("pc"):
+            textbutton _("退出游戏") action Quit(confirm=not main_menu)
 
-            ## 退出按钮在 iOS 上是被禁止使用的，在安卓和网页上也不是必要的。
-            textbutton _("退出") action Quit(confirm=not main_menu)
+        # TODO: 关于界面
+        textbutton _("制作名单") action ShowMenu("about")
 
 
 style navigation_button is gui_button
@@ -529,7 +516,7 @@ screen about():
             label "[config.name!t]"
             text _("版本 [config.version!t]\n")
 
-            text _("短文字\n")
+            text _("\n") # TODO: 关于文字
 
             text _("引擎：{a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only]\n\n[renpy.license!t]")
 
@@ -554,14 +541,14 @@ screen save():
 
     tag menu
 
-    use file_slots(_("保存"))
+    use file_slots(_("保存进度"))
 
 
 screen load():
 
     tag menu
 
-    use file_slots(_("读取游戏"))
+    use file_slots(_("读取进度"))
 
 
 screen file_slots(title):
@@ -680,83 +667,97 @@ style slot_button_text:
 screen preferences():
 
     tag menu
+    style_prefix "game_menu"
 
-    use game_menu(_("设置"), scroll="viewport"):
+    add gui.game_menu_background
 
-        vbox:
+    frame:
+        style "preferences_outer_frame"
 
-            hbox:
-                box_wrap True
+        hbox:
 
-                if renpy.variant("pc") or renpy.variant("web"):
+            frame:
+                style "preferences_content_frame"
+
+                viewport:
+                    yinitial 0.0
+                    scrollbars "vertical"
+                    mousewheel True
+                    draggable True
+                    pagekeys True
+
+                    side_yfill True
 
                     vbox:
-                        style_prefix "radio"
-                        label _("显示")
-                        textbutton _("窗口") action Preference("display", "window")
-                        textbutton _("") action Preference("display", "fullscreen")
 
-                vbox:
-                    style_prefix "check"
-                    label _("快进")
-                    textbutton _("未读文本") action Preference("skip", "toggle")
-                    textbutton _("选项后继续") action Preference("after choices", "toggle")
-                    textbutton _("忽略转场") action InvertSelected(Preference("transitions", "toggle"))
+                        vbox:
 
-                ## 可在此处添加 radio_pref 或 check_pref 类型的额外 vbox，以添加
-                ## 额外的创建者定义的偏好设置。
+                            ## 可在此处添加 radio_pref 或 check_pref 类型的额外 vbox，以添加
+                            ## 额外的创建者定义的偏好设置。
 
-            null height (4 * gui.pref_spacing)
+                            hbox:
+                                style_prefix "slider"
+                                box_wrap True
 
-            hbox:
-                style_prefix "slider"
-                box_wrap True
+                                vbox:
+                                    label _("文字速度")
+                                    bar value Preference("text speed")
 
-                vbox:
+                                vbox:
+                                    label _("自动前进时间")
+                                    bar value Preference("auto-forward time")
 
-                    label _("文字速度")
+                                if config.has_music:
+                                    vbox:
+                                        label _("音乐音量")
+                                        bar value Preference("music volume")
 
-                    bar value Preference("text speed")
+                                if config.has_sound:
+                                    vbox:
+                                        label _("音效音量")
+                                        bar value Preference("sound volume")
+                                        if config.sample_sound:
+                                            textbutton _("测试") action Play("sound", config.sample_sound)
 
-                    label _("自动前进时间")
+                                if config.has_voice:
+                                    vbox:
+                                        label _("语音音量")
+                                        bar value Preference("voice volume")
+                                        if config.sample_voice:
+                                            textbutton _("测试") action Play("voice", config.sample_voice)
 
-                    bar value Preference("auto-forward time")
+                                if config.has_music or config.has_sound or config.has_voice:
+                                    vbox:
+                                        null height gui.pref_spacing
+                                        textbutton _("全部静音"):
+                                            action Preference("all mute", "toggle")
+                                            style "mute_all_button"
 
-                vbox:
+                            hbox:
+                                box_wrap True
 
-                    if config.has_music:
-                        label _("音乐音量")
+                                if renpy.variant("pc") or renpy.variant("web"):
+                                    vbox:
+                                        style_prefix "radio"
+                                        label _("显示")
+                                        textbutton _("窗口") action Preference("display", "window")
+                                        textbutton _("") action Preference("display", "fullscreen")
 
-                        hbox:
-                            bar value Preference("music volume")
+                                vbox:
+                                    style_prefix "check"
+                                    label _("快进")
+                                    textbutton _("未读文本") action Preference("skip", "toggle")
+                                    textbutton _("选项后继续") action Preference("after choices", "toggle")
+                                    textbutton _("忽略转场") action InvertSelected(Preference("transitions", "toggle"))
 
-                    if config.has_sound:
+    textbutton _("返回"):
+        style "return_button"
 
-                        label _("音效音量")
-
-                        hbox:
-                            bar value Preference("sound volume")
-
-                            if config.sample_sound:
-                                textbutton _("测试") action Play("sound", config.sample_sound)
+        action Return()
 
 
-                    if config.has_voice:
-                        label _("语音音量")
-
-                        hbox:
-                            bar value Preference("voice volume")
-
-                            if config.sample_voice:
-                                textbutton _("测试") action Play("voice", config.sample_voice)
-
-                    if config.has_music or config.has_sound or config.has_voice:
-                        null height gui.pref_spacing
-
-                        textbutton _("全部静音"):
-                            action Preference("all mute", "toggle")
-                            style "mute_all_button"
-
+style preferences_outer_frame is empty
+style preferences_content_frame is empty
 
 style pref_label is gui_label
 style pref_label_text is gui_label_text
@@ -792,7 +793,8 @@ style pref_label_text:
     yalign 1.0
 
 style pref_vbox:
-    xsize 225
+    xsize 350
+    xalign 0.5
 
 style radio_vbox:
     spacing gui.pref_button_spacing
@@ -816,6 +818,9 @@ style check_button_text:
 
 style slider_slider:
     xsize 350
+    xoffset 300
+    yoffset -30
+    xalign 1.0
 
 style slider_button:
     properties gui.button_properties("slider_button")
@@ -825,8 +830,16 @@ style slider_button:
 style slider_button_text:
     properties gui.button_text_properties("slider_button")
 
+style slider_pref_vbox:
+    xsize 600
+
 style slider_vbox:
-    xsize 450
+    xsize 600
+
+style preferences_outer_frame:
+    xalign 0.5
+    yalign 1.0
+    top_margin 40
 
 
 ## 历史界面 ########################################################################
